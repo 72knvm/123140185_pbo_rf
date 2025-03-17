@@ -1,0 +1,49 @@
+from abc import ABC
+
+class Plant(ABC):
+    def __init__(self, name, water_needs, fertilizer_needs):
+        self.name = name
+        self.water_needs = water_needs
+        self.fertilizer_needs = fertilizer_needs
+    
+    def grow(self):
+        pass
+    
+    def calculate_needs(self, rainfall, soil_moisture):
+        adjusted_water = max(0, self.water_needs - (rainfall * 1.5)) if soil_moisture > 50 else self.water_needs
+        adjusted_fertilizer = self.fertilizer_needs - (rainfall * 0.1) if rainfall > 5 else self.fertilizer_needs
+        return adjusted_water, adjusted_fertilizer
+    
+    def show_needs(self, rainfall, soil_moisture):
+        adjusted_water, adjusted_fertilizer = self.calculate_needs(rainfall, soil_moisture)
+        print(f"{self.name} is growing.")
+        print(f"Weather Report: Rainfall = {rainfall} mm, Soil Moisture = {soil_moisture}%")
+        print(f"Adjusted Water Needs: {adjusted_water} liters")
+        print(f"Adjusted Fertilizer Needs: {adjusted_fertilizer} kg\n")
+
+class RicePlant(Plant):
+    def __init__(self):
+        super().__init__("Rice", 20, 5)
+    
+    def grow(self):
+        print("Rice is growing in the paddy field")
+
+class CornPlant(Plant):
+    def __init__(self):
+        super().__init__("Corn", 20, 7)
+    
+    def grow(self):
+        print("Corn is growing in the farm")
+
+def simulate_weather():
+    return [(10, 75), (2, 40)]
+
+if __name__ == "__main__":
+    rice = RicePlant()
+    corn = CornPlant()
+    
+    weather_conditions = simulate_weather()
+    
+    for plant, (rainfall, soil_moisture) in zip([rice, corn], weather_conditions):
+        plant.grow()
+        plant.show_needs(rainfall, soil_moisture)
