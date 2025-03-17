@@ -1,0 +1,49 @@
+class BankAccount:
+    exchange_rates = {"USD": 1, "EUR": 1.1, "IDR": 0.00007}
+    
+    def __init__(self, account_holder, balance, currency):
+        self.account_holder = account_holder
+        self.balance = balance
+        self.currency = currency
+    
+    def __str__(self):
+        return f"{self.account_holder}'s Account: Balance = {self.currency} {self.balance:.2f}"
+    
+    def convert_currency(self, amount, from_currency, to_currency):
+        return amount * self.exchange_rates[to_currency] / self.exchange_rates[from_currency]
+    
+    def __add__(self, other):
+        converted_balance = self.convert_currency(other.balance, other.currency, self.currency)
+        new_balance = self.balance + converted_balance
+        return BankAccount(self.account_holder, new_balance, self.currency)
+    
+    def __sub__(self, amount):
+        if amount > self.balance:
+            print("Insufficient balance for withdrawal!")
+        else:
+            self.balance -= amount
+        return self
+    
+    def apply_interest(self):
+        interest_rate = 0.02 if self.balance > 5000 else 0.01
+        self.balance += self.balance * interest_rate
+        print(f"Applying interest... New Balance = {self.currency} {self.balance:.2f}")
+        if self.balance < 100:
+            print("Low Balance Warning!")
+
+if __name__ == "__main__":
+    david = BankAccount("David", 5000, "USD")
+    lucy = BankAccount("Lucy", 1000, "EUR")
+    
+    print(david)
+    david.apply_interest()
+    print(david, "\n")
+    
+    print(lucy)
+    converted_amount = lucy.convert_currency(lucy.balance, "EUR", "USD")
+    print(f"Converted to USD: ${converted_amount:.2f}")
+    if converted_amount >= 1200:
+        lucy.balance -= 1200 / BankAccount.exchange_rates["EUR"]
+    else:
+        print("Insufficient balance for withdrawal!")
+    print(lucy)
